@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="zh" ng-app="restApp">
+	<head>
+		<meta charset="utf-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>点餐</title>
+		<!-- Bootstrap -->
+		<link href="../css/bootstrap.min.css" rel="stylesheet">
+		<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+		<link href="../css/ie10-viewport-bug-workaround.css" rel="stylesheet">
+		<!-- Custom styles for this template -->
+		<link href="../css/offcanvas.css" rel="stylesheet">
+		<!-- Just for debugging purposes. Don't actually copy these 2 lines! -->
+		<!--[if lt IE 9]><script src="../../assets/js/ie8-responsive-file-warning.js"></script><![endif]-->
+		<script src="../js/ie-emulation-modes-warning.js"></script>
+		<script src="../js/angular-1.3.0.js"></script>
+		<script src="../js/app.js"></script>
+		<script src="../js/controllers.js"></script>
+	</head>
+	<body>
+		<div class="container" ng-controller="OrderCtrl">
+			<nav class="navbar navbar-fixed-top navbar-default">
+				<div class="container">
+					<div class="navbar-header">
+						<button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#navbar" aria-expanded="false" aria-controls="navbar">
+						<span class="sr-only">下拉</span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						<span class="icon-bar"></span>
+						</button>
+						<a class="navbar-brand" href="#">菜单</a>
+					</div>
+					<form class="navbar-form navbar-left" method="post">
+						<input type="hidden" name="tel" ng-value="tel" />
+						<button type="button" class="btn btn-primary" ng-disabled="count===0 || !selectedSeat" ng-click="submitOrder(selectedDish, selectedSeat, tel)">提交 <span class="badge">{{count}}</span> 合计{{sum}}元</button>
+						<!-- Button trigger modal -->
+						<button type="button" class="btn btn-primary" data-toggle="modal" data-target="#myModal" ng-click="refresh()">
+						点菜记录
+						</button>
+					</form>
+					<div id="navbar" class="collapse navbar-collapse">
+						<ul class="nav navbar-nav">
+							<li class="active"><a href="#">炒菜</a></li>
+							<li><a href="#about">凉菜</a></li>
+							<li><a href="#contact">冷饮</a></li>
+						</ul>
+					</div>
+				</div>
+			</nav>
+			
+			<div class="container">
+				<div class="row row-offcanvas row-offcanvas-right">
+					<p class="pull-right visible-xs">
+						<button type="button" class="btn btn-primary btn-xs" data-toggle="offcanvas">下拉</button>
+					</p>
+					<div class="jumbotron">
+						<h1>餐馆名</h1>
+						<p>
+							<select class="input-lg" ng-model="selectedSeat" ng-options="m.value as m.seatNo for m in capacity" required>
+								<option value=''>-- 请选择 --</option>
+							</select>
+							<span class="alert alert-danger" ng-hide="selectedSeat">房间号,桌号必须选择!</span>
+						</p>
+					</div>
+					<div class="row">
+						<div class="col-xs-6 col-lg-4" ng-repeat="dish in menuList">
+							<div href="#" class="thumbnail">
+								<img ng-src="{{dish.picPath}}" alt="{{dish.name}}" style="height: 180px; width: 100%; display: block;">
+								<div class="caption">
+									<h3>{{dish.name}}</h3>
+									<p>{{dish.price}}元/份</p>
+									<p><div class="input-group input-group-lg">
+										<!-- <input type="hidden" name="oid" value="{{dish._id.$oid}}"> -->
+										<span class="input-group-addon">
+											<input type="checkbox" aria-label="..." name="selected" ng-model="dish.selected" ng-click="updateSelection($event, this)">
+										</span>
+										<input type="number" class="form-control" placeholder="份数" ng-model="dish.amount" maxLength="4" min="1" max="20" aria-label="..." ng-change="input(dish.selected, this)">
+									</div>
+								</p>
+								<p>
+									<div class="input-group input-group-lg">
+										<input type="text" class="form-control" placeholder="特殊要求" ng-model="dish.comment" aria-label="..." ng-change="input(dish.selected, this)">
+									</div>
+								</p>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+		<!-- Modal -->
+		<div class="modal fade" id="myModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+			<div class="modal-dialog" role="document">
+				<div class="modal-content">
+					<div class="modal-body">
+						<div class="panel panel-primary">
+							<div class="panel-heading">
+								<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+								<h3 class="panel-title">点菜记录</h3>{{tel}}
+							</div>
+							<div class="panel-body">
+								<div class="list-group">
+									<a ng-class="{'cancel': 'list-group-item list-group-item-danger', 'active': 'list-group-item list-group-item-success', 'complete': 'list-group-item list-group-item-info'}[order.status]" ng-repeat="order in orderHistory | orderBy:'insertDt'">
+										<h4 class="list-group-item-heading"> 订单{{$index+1}} - {{order.seat}} - {{order.insertDt | date:'yyyy-MM-dd HH:mm:ss'}} </h4>
+										<p class="list-group-item-text" ng-repeat="dish in order.dishList">{{dish.name}} {{dish.amount}}份 要求:{{dish.comment}}</p>
+									</a>
+								</div>
+								
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+	<script src="../js/jquery.min.js"></script>
+	<!-- Include all compiled plugins (below), or include individual files as needed -->
+	<script src="../js/bootstrap.min.js"></script>
+	<!-- IE10 viewport hack for Surface/desktop Windows 8 bug -->
+	<script src="../js/ie10-viewport-bug-workaround.js"></script>
+	<script src="../js/offcanvas.js"></script>
+</body>
+</html>
