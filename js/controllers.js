@@ -7,7 +7,7 @@ restCtrls.controller('OrderCtrl', ['$scope','$http','$window', '$location',
 		}).error(function(){
             console.error("Failed to save.");
         });
-
+    $scope.selectedType = '01';
     $scope.selectedSeat = '';
 
     $scope.capacity = [{

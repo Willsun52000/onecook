@@ -41,9 +41,9 @@
 					</form>
 					<div id="navbar" class="collapse navbar-collapse">
 						<ul class="nav navbar-nav">
-							<li class="active"><a href="#">炒菜</a></li>
-							<li><a href="#about">凉菜</a></li>
-							<li><a href="#contact">冷饮</a></li>
+							<li ng-class="{true:'active', false:'inactive'}[selectedType=='01']"><a href="" ng-click="selectedType='01'">主菜</a></li>
+							<li ng-class="{true:'active', false:'inactive'}[selectedType=='02']"><a href="" ng-click="selectedType='02'">凉菜</a></li>
+							<li ng-class="{true:'active', false:'inactive'}[selectedType=='03']"><a href="" ng-click="selectedType='03'">冷饮</a></li>
 						</ul>
 					</div>
 				</div>
@@ -60,28 +60,38 @@
 							<select class="input-lg" ng-model="selectedSeat" ng-options="m.value as m.seatNo for m in capacity" required>
 								<option value=''>-- 请选择 --</option>
 							</select>
-							<span class="alert alert-danger" ng-hide="selectedSeat">房间号,桌号必须选择!</span>
+							<span class="alert alert-danger" role="alert" ng-hide="selectedSeat">房间号,桌号必须选择!</span>
 						</p>
 					</div>
+					<!-- <div class="page-header">
+								<h1 ng-show="selectedType=='01'">主菜</h1>
+								<h1 ng-show="selectedType=='02'">凉菜</h1>
+								<h1 ng-show="selectedType=='03'">冷饮</h1>
+					</div> -->
+					<div class="page-header">
+						<ul class="nav nav-tabs">
+							<li ng-class="{true:'active', false:'inactive'}[selectedType=='01']"><a href="" ng-click="selectedType='01'">主菜</a></li>
+							<li ng-class="{true:'active', false:'inactive'}[selectedType=='02']"><a href="" ng-click="selectedType='02'">凉菜</a></li>
+							<li ng-class="{true:'active', false:'inactive'}[selectedType=='03']"><a href="" ng-click="selectedType='03'">冷饮</a></li>
+						</ul>
+					</div>
 					<div class="row">
-						<div class="col-xs-6 col-lg-4" ng-repeat="dish in menuList">
+						<div class="col-xs-6 col-lg-4" ng-repeat="dish in menuList | filter:{type:selectedType}">
 							<div href="#" class="thumbnail">
 								<img ng-src="{{dish.picPath}}" alt="{{dish.name}}" style="height: 180px; width: 100%; display: block;">
 								<div class="caption">
 									<h3>{{dish.name}}</h3>
 									<p>{{dish.price}}元/份</p>
-									<p><div class="input-group input-group-lg">
+									<p><div class="input-group">
 										<!-- <input type="hidden" name="oid" value="{{dish._id.$oid}}"> -->
 										<span class="input-group-addon">
 											<input type="checkbox" aria-label="..." name="selected" ng-model="dish.selected" ng-click="updateSelection($event, this)">
 										</span>
-										<input type="number" class="form-control" placeholder="份数" ng-model="dish.amount" maxLength="4" min="1" max="20" aria-label="..." ng-change="input(dish.selected, this)">
+										<input type="number" class="form-control text-center" placeholder="份数" ng-model="dish.amount" size="4" min="1" max="20" aria-label="..." ng-change="input(dish.selected, this)">
 									</div>
 								</p>
 								<p>
-									<div class="input-group input-group-lg">
-										<input type="text" class="form-control" placeholder="特殊要求" ng-model="dish.comment" aria-label="..." ng-change="input(dish.selected, this)">
-									</div>
+									<input type="text" class="form-control" placeholder="特殊要求" ng-model="dish.comment" aria-label="..." ng-change="input(dish.selected, this)" maxlength="10">
 								</p>
 							</div>
 						</div>
@@ -101,7 +111,7 @@
 							</div>
 							<div class="panel-body">
 								<div class="list-group">
-									<a ng-class="{'cancel': 'list-group-item list-group-item-danger', 'active': 'list-group-item list-group-item-success', 'complete': 'list-group-item list-group-item-info'}[order.status]" ng-repeat="order in orderHistory | orderBy:'insertDt'">
+									<a ng-class="{'cancel': 'list-group-item list-group-item-danger', 'active': 'list-group-item list-group-item-success', 'complete': 'list-group-item list-group-item-info'}[order.status]" ng-repeat="order in orderHistory | orderBy:'insertDt'" data-toggle="tooltip" data-placement="right">
 										<h4 class="list-group-item-heading"> 订单{{$index+1}} - {{order.seat}} - {{order.insertDt | date:'yyyy-MM-dd HH:mm:ss'}} </h4>
 										<p class="list-group-item-text" ng-repeat="dish in order.dishList">{{dish.name}} {{dish.amount}}份 要求:{{dish.comment}}</p>
 									</a>
